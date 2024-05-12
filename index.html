@@ -30,6 +30,11 @@
             max-width: 500px;
         }
 
+        .highcharts-reset-zoom {
+            border-radius: 8px; 
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); 
+        }
+
         .search-container:focus-within {
             box-shadow: 0 2px 15px rgba(0, 0, 0, 0.2);
         }
@@ -294,20 +299,46 @@
                 }));
 
                 Highcharts.chart(containerId, {
-                    chart: {
-                        type: 'area',
-                        zoomType: 'x',
-                        panning: true,
-                        panKey: 'shift',
-                        animation: true,
-                        backgroundColor: '#ffffff',
-                        panAnimation: {
-                            easing: 'easeInOutQuad'
+                chart: {
+                    type: 'area',
+                    zoomType: 'x',
+                    panning: true,
+                    panKey: 'shift',
+                    resetZoomButton: {
+                        theme: {
+                            fill: 'white',
+                            stroke: chartColor, 
+                            r: 5,
+                            style: {
+                                color: chartColor,
+                                fontSize: '12px',
+                                fontWeight: 'bold'
+                            },
+                            states: {
+                                hover: {
+                                    fill: chartColor,
+                                    style: {
+                                        color: 'white'
+                                    }
+                                }
+                            }
                         },
-                        zoomAnimation: {
-                            easing: 'easeInOutQuad'
+                        position: {
+                            align: 'right',
+                            verticalAlign: 'top',
+                            x: -10,
+                            y: 10
                         }
+                    },          
+                    animation: true,
+                    backgroundColor: '#ffffff',
+                    panAnimation: {
+                        easing: 'easeInOutQuad'
                     },
+                    zoomAnimation: {
+                        easing: 'easeInOutQuad'
+                    }
+                },
                     title: {
                         text: seriesName
                     },
