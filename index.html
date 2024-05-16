@@ -231,7 +231,7 @@
 
             if (response.ok) {
                 console.log(`Total points before removal: ${graphData.data.length}`);
-                const reducedData = reduceDataPoints(graphData.data, 12000);
+                const reducedData = reduceDataPoints(graphData.data, 20000);
                 drawChart(reducedData, graphData.channelDetails.profilePicture);
                 drawAverageChart(reducedData, graphData.channelDetails.profilePicture);
             } else {
