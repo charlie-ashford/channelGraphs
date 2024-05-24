@@ -177,236 +177,227 @@
             }
         });
 
-        async function fetchChannelData() {
-            const channelHandle = document.getElementById('channelIdInput').value.trim() || 'MrBeast';
-            try {
-                const response = await fetch(`https://api.communitrics.com/youtube/api/?channel=${channelHandle}`);
-                const data = await response.json();
+async function fetchChannelData() {
+    const channelHandle = document.getElementById('channelIdInput').value.trim() || 'MrBeast';
+    try {
+        const response = await fetch(`https://api.communitrics.com/youtube/api/?channel=${channelHandle}`);
+        const data = await response.json();
 
-                if (response.ok) {
-                    displayChannelInfo(data.channelDetails);
-                    fetchGraphData(data.channelId);
-                    showContent();
-                } else {
-                    document.getElementById('channelInfo').innerHTML = data.error || 'An error occurred while fetching data.';
-                    hideContent();
-                }
-            } catch (error) {
-                console.error('Failed to fetch data:', error);
-                document.getElementById('channelInfo').innerHTML = 'Failed to fetch data.';
-                hideContent();
-            }
+        if (response.ok) {
+            displayChannelInfo(data.channelDetails);
+            fetchGraphData(data.channelId);
+            showContent();
+        } else {
+            document.getElementById('channelInfo').innerHTML = data.error || 'An error occurred while fetching data.';
+            hideContent();
         }
+    } catch (error) {
+        console.error('Failed to fetch data:', error);
+        document.getElementById('channelInfo').innerHTML = 'Failed to fetch data.';
+        hideContent();
+    }
+}
 
-        function showContent() {
-            document.getElementById('channelInfo').classList.add('show');
-            document.getElementById('chartArea').classList.add('show');
+function showContent() {
+    document.getElementById('channelInfo').classList.add('show');
+    document.getElementById('chartArea').classList.add('show');
+}
+
+function hideContent() {
+    document.getElementById('channelInfo').classList.remove('show');
+    document.getElementById('chartArea').classList.remove('show');
+}
+
+function filterOutliers(data) {
+    const values = data.map(item => parseInt(item.average_per_day));
+    values.sort((a, b) => a - b);
+
+    const q1 = values[Math.floor((values.length / 4))];
+    const q3 = values[Math.floor((values.length * (3 / 4)))];
+    const iqr = q3 - q1;
+    const lowerBound = q1 - 4 * iqr;
+    const upperBound = q3 + 4 * iqr;
+
+    return data.filter(item => {
+        const val = parseInt(item.average_per_day);
+        return (val >= lowerBound && val <= upperBound);
+    });
+}
+
+async function fetchGraphData(channelId) {
+    try {
+        const response = await fetch(`https://api.communitrics.com/${channelId}?david=true&averages=true`);
+        const graphData = await response.json();
+
+        if (response.ok) {
+            console.log(`Total points before removal: ${graphData.data.length}`);
+            const reducedData = reduceDataPoints(graphData.data, 10000);
+            console.log(`Total points after removal: ${reducedData.length}`);
+            drawChart(reducedData, graphData.channelDetails.profilePicture);
+            drawAverageChart(reducedData, graphData.channelDetails.profilePicture);
+        } else {
+            console.log('Error fetching graph data:', graphData.error || 'An unspecified error occurred.');
         }
+    } catch (error) {
+        console.error('Failed to fetch graph data:', error);
+    }
+}
 
-        function hideContent() {
-            document.getElementById('channelInfo').classList.remove('show');
-            document.getElementById('chartArea').classList.remove('show');
-        }
+function displayChannelInfo(details) {
+    const infoHtml = `
+        <div style="display: flex; align-items: flex-start;">
+            <img src="${details.profileImage}" alt="Channel Image" style="width: 100px; height: 100px; border-radius: 50%; margin-top: -10px;">
+            <div style="margin-left: 20px;">
+                <h2>${details.title}</h2>
+                <p>Subscribers: ${parseInt(details.subscriberCount).toLocaleString()}</p>
+            </div>
+        </div>
+    `;
+    document.getElementById('channelInfo').innerHTML = infoHtml;
+}
 
-        function filterOutliers(data) {
-            const values = data.map(item => parseInt(item.average_per_day));
-            values.sort((a, b) => a - b);
+function drawChart(channelSubscriberData, profilePictureUrl) {
+    const numericData = channelSubscriberData.map(data => ({
+        ...data,
+        previous_sub_count: parseInt(data.previous_sub_count),
+        average_per_day: parseInt(data.average_per_day)
+    }));
+    setupChart(numericData, 'chartContainer', profilePictureUrl, 'Subscribers', 'Subscribers');
+}
 
-            const q1 = values[Math.floor((values.length / 4))];
-            const q3 = values[Math.floor((values.length * (3 / 4)))];
-            const iqr = q3 - q1;
-            const lowerBound = q1 - 4 * iqr;
-            const upperBound = q3 + 4 * iqr;
+function drawAverageChart(channelSubscriberData, profilePictureUrl) {
+    const filteredData = filterOutliers(channelSubscriberData);
 
-            return data.filter(item => {
-                const val = parseInt(item.average_per_day);
-                return (val >= lowerBound && val <= upperBound);
-            });
-        }
+    const numericData = filteredData.map(data => ({
+        ...data,
+        average_per_day: parseInt(data.average_per_day)
+    }));
 
-        async function fetchGraphData(channelId) {
-            try {
-                const response = await fetch(`https://api.communitrics.com/${channelId}?david=true&averages=true`);
-                const graphData = await response.json();
+    setupChart(numericData, 'averageSubChart', profilePictureUrl, 'Average Daily Subscribers', 'Average Subscribers', true);
+}
 
-                if (response.ok) {
-                    console.log(`Total points before removal: ${graphData.data.length}`);
-                    const reducedData = reduceDataPoints(graphData.data, 10000);
-                    console.log(`Total points after removal: ${reducedData.length}`);
-                    drawChart(reducedData, graphData.channelDetails.profilePicture);
-                    drawAverageChart(reducedData, graphData.channelDetails.profilePicture);
-                } else {
-                    console.log('Error fetching graph data:', graphData.error || 'An unspecified error occurred.');
-                }
-            } catch (error) {
-                console.error('Failed to fetch graph data:', error);
-            }
-        }
+function getVibrancy(rgb) {
+    const max = Math.max(rgb[0], rgb[1], rgb[2]);
+    const min = Math.min(rgb[0], rgb[1], rgb[2]);
+    const saturation = max - min;
+    const brightness = 0.299 * rgb[0] + 0.587 * rgb[1] + 0.114 * rgb[2];
+    return saturation * brightness;
+}
 
-        function displayChannelInfo(details) {
-            const infoHtml = `
-                <div style="display: flex; align-items: flex-start;">
-                    <img src="${details.profileImage}" alt="Channel Image" style="width: 100px; height: 100px; border-radius: 50%; margin-top: -10px;">
-                    <div style="margin-left: 20px;">
-                        <h2>${details.title}</h2>
-                        <p>Subscribers: ${parseInt(details.subscriberCount).toLocaleString()}</p>
-                    </div>
-                </div>
-            `;
-            document.getElementById('channelInfo').innerHTML = infoHtml;
-        }
+function getMostVibrantColor(palette) {
+    return palette.reduce((mostVibrant, color) => getVibrancy(color) > getVibrancy(mostVibrant) ? color : mostVibrant);
+}
 
-        function drawChart(channelSubscriberData, profilePictureUrl) {
-            const numericData = channelSubscriberData.map(data => ({
-                ...data,
-                previous_sub_count: parseInt(data.previous_sub_count),
-                average_per_day: parseInt(data.average_per_day)
-            }));
-            setupChart(numericData, 'chartContainer', profilePictureUrl, 'Subscribers', 'Subscribers');
-        }
+function setupChart(data, containerId, profilePictureUrl, seriesName, yAxisText, isAverage = false) {
+    const colorThief = new ColorThief();
+    const img = new Image();
+    img.crossOrigin = "Anonymous";
+    img.onload = function() {
+        const palette = colorThief.getPalette(img, 8);
+        const mostVibrantColor = getMostVibrantColor(palette);
+        const chartColor = `rgba(${mostVibrantColor.join(',')}, 0.6)`;
 
-        function drawAverageChart(channelSubscriberData, profilePictureUrl) {
-            const filteredData = filterOutliers(channelSubscriberData);
+        const chartData = data.map(entry => ({
+            x: new Date(entry.last_updated).getTime(),
+            y: isAverage ? entry.average_per_day : entry.previous_sub_count
+        }));
 
-            const numericData = filteredData.map(data => ({
-                ...data,
-                average_per_day: parseInt(data.average_per_day)
-            }));
-
-            setupChart(numericData, 'averageSubChart', profilePictureUrl, 'Average Daily Subscribers', 'Average Subscribers', true);
-        }
-
-        function getVibrancy(rgb) {
-            const max = Math.max(rgb[0], rgb[1], rgb[2]);
-            const min = Math.min(rgb[0], rgb[1], rgb[2]);
-            const saturation = max - min;
-            const brightness = 0.299 * rgb[0] + 0.587 * rgb[1] + 0.114 * rgb[2];
-            return saturation * brightness;
-        }
-
-        function getMostVibrantColor(palette) {
-            return palette.reduce((mostVibrant, color) => getVibrancy(color) > getVibrancy(mostVibrant) ? color : mostVibrant);
-        }
-
-        function setupChart(data, containerId, profilePictureUrl, seriesName, yAxisText, isAverage = false) {
-            const colorThief = new ColorThief();
-            const img = new Image();
-            img.crossOrigin = "Anonymous";
-            img.onload = function() {
-                const palette = colorThief.getPalette(img, 8);
-                const mostVibrantColor = getMostVibrantColor(palette);
-                const chartColor = `rgba(${mostVibrantColor.join(',')}, 0.6)`;
-
-                const chartData = data.map(entry => ({
-                    x: new Date(entry.last_updated).getTime(),
-                    y: isAverage ? entry.average_per_day : entry.previous_sub_count
-                }));
-
-                Highcharts.chart(containerId, {
-                    chart: {
-                        type: 'area',
-                        zoomType: 'x',
-                        panning: true,
-                        panKey: 'shift',
-                        resetZoomButton: {
-                            theme: {
-                                fill: 'white',
-                                stroke: chartColor,
-                                r: 5,
-                                style: {
-                                    color: chartColor,
-                                    fontSize: '12px',
-                                    fontWeight: 'bold'
+        Highcharts.chart(containerId, {
+            chart: {
+                type: 'area',
+                zoomType: 'x',
+                panning: true,
+                panKey: 'shift',
+                resetZoomButton: {
+                    theme: {
+                        fill: 'white',
+                        stroke: chartColor,
+                        r: 5,
+                        style: {
+                            color: chartColor,
+                            fontSize: '12px',
+                            fontWeight: 'bold'
+                            },
+                            states: {
+                                hover: {
+                                    fill: chartColor,
+                                    style: {
+                                        color: 'white'
+                                        },
+                                      },
+                                    },
+                                  },
+                                  position: {
+                                    align: "right",
+                                    verticalAlign: "top",
+                                    x: -10,
+                                    y: 10,
+                                  },
+                                  relativeTo: "chart",
                                 },
-                                states: {
-                                    hover: {
-                                        fill: chartColor,
-                                        style: {
-                                            color: 'white'
-                                        }
+                              },
+                              title: {
+                            text: seriesName
+                        },
+                        xAxis: {
+                            type: 'datetime',
+                            title: {
+                                text: 'Date'
+                            }
+                        },
+                        yAxis: {
+                            title: {
+                                text: yAxisText
+                            }
+                        },
+                        series: [{
+                            name: seriesName,
+                            data: chartData,
+                            color: chartColor,
+                            lineWidth: 1.5,
+                            marker: {
+                                enabled: false
+                            },
+                            fillColor: chartColor,
+                            threshold: null
+                        }],
+                        plotOptions: {
+                            series: {
+                                turboThreshold: chartData.length
+                            }
+                        },
+                        responsive: {
+                            rules: [{
+                                condition: {
+                                    maxWidth: 500
+                                },
+                                chartOptions: {
+                                    chart: {
+                                        height: 300
+                                    },
+                                    legend: {
+                                        enabled: false
+                                    },
+                                    subtitle: {
+                                        enabled: false
                                     }
                                 }
-                            },
-                            position: {
-                                align: 'right',
-                                verticalAlign: 'top',
-                                x: -10,
-                                y: 10,
-                                relativeTo: "chart",
-                            },
+                            }]
                         },
-                        animation: true,
-                        backgroundColor: '#ffffff',
-                        panAnimation: {
-                            easing: 'easeInOutQuad'
-                        },
-                        zoomAnimation: {
-                            easing: 'easeInOutQuad'
+                        credits: {
+                            enabled: true,
+                            text: 'communitrics.com',
+                            href: 'http://www.communitrics.com'
                         }
-                    },
-                    title: {
-                        text: seriesName
-                    },
-                    xAxis: {
-                        type: 'datetime',
-                        title: {
-                            text: 'Date'
-                        }
-                    },
-                    yAxis: {
-                        title: {
-                            text: yAxisText
-                        }
-                    },
-                    series: [{
-                        name: seriesName,
-                        data: chartData,
-                        color: chartColor,
-                        lineWidth: 1.5,
-                        marker: {
-                            enabled: false
-                        },
-                        fillColor: chartColor,
-                        threshold: null
-                    }],
-                    plotOptions: {
-                        series: {
-                            turboThreshold: chartData.length
-                        }
-                    },
-                    responsive: {
-                        rules: [{
-                            condition: {
-                                maxWidth: 500
-                            },
-                            chartOptions: {
-                                chart: {
-                                    height: 300
-                                },
-                                legend: {
-                                    enabled: false
-                                },
-                                subtitle: {
-                                    enabled: false
-                                }
-                            }
-                        }]
-                    },
-                    credits: {
-                        enabled: true,
-                        text: 'communitrics.com',
-                        href: 'http://www.communitrics.com'
-                    }
-                });
-            };
-            img.src = profilePictureUrl;
-        }
-
+                    });
+                };
+                img.src = profilePictureUrl;
+            }
+        
         function reduceDataPoints(data, maxPoints) {
             console.log(`Total points before removal: ${data.length}`);
             const thresholdDate = new Date('2024-05-13T22:31:22.960Z').getTime();
             
-            // Separate data into before and after the threshold date
             const beforeThreshold = data.filter(entry => new Date(entry.last_updated).getTime() <= thresholdDate);
             const afterThreshold = data.filter(entry => new Date(entry.last_updated).getTime() > thresholdDate);
 
