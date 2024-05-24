@@ -302,94 +302,98 @@ function setupChart(data, containerId, profilePictureUrl, seriesName, yAxisText,
             y: isAverage ? entry.average_per_day : entry.previous_sub_count
         }));
 
-        Highcharts.chart(containerId, {
-            chart: {
-                type: 'area',
-                zoomType: 'x',
-                panning: true,
-                panKey: 'shift',
-                resetZoomButton: {
-                    theme: {
-                        fill: 'white',
-                        stroke: chartColor,
-                        r: 5,
-                        style: {
-                            color: chartColor,
-                            fontSize: '12px',
-                            fontWeight: 'bold'
-                            },
-                            states: {
-                                hover: {
-                                    fill: chartColor,
-                                    style: {
-                                        color: 'white'
+                Highcharts.chart(containerId, {
+                    chart: {
+                        type: 'area',
+                        zoomType: 'x',
+                        panning: true,
+                        panKey: 'shift',
+                        animation: {
+                            duration: 500,
+                            easing: 'easeInOutBounce'
+                        },
+                        resetZoomButton: {
+                            theme: {
+                                fill: 'white',
+                                stroke: chartColor,
+                                r: 5,
+                                style: {
+                                    color: chartColor,
+                                    fontSize: '12px',
+                                    fontWeight: 'bold'
+                                },
+                                states: {
+                                    hover: {
+                                        fill: chartColor,
+                                        style: {
+                                            color: 'white'
                                         },
-                                      },
                                     },
-                                  },
-                                  position: {
-                                    align: "right",
-                                    verticalAlign: "top",
-                                    x: -10,
-                                    y: 10,
-                                  },
-                                  relativeTo: "chart",
                                 },
-                              },
-                              title: {
-                            text: seriesName
-                        },
-                        xAxis: {
-                            type: 'datetime',
-                            title: {
-                                text: 'Date'
-                            }
-                        },
-                        yAxis: {
-                            title: {
-                                text: yAxisText
-                            }
-                        },
-                        series: [{
-                            name: seriesName,
-                            data: chartData,
-                            color: chartColor,
-                            lineWidth: 1.5,
-                            marker: {
-                                enabled: false
                             },
-                            fillColor: chartColor,
-                            threshold: null
-                        }],
-                        plotOptions: {
-                            series: {
-                                turboThreshold: chartData.length
-                            }
+                            position: {
+                                align: "right",
+                                verticalAlign: "top",
+                                x: -10,
+                                y: 10,
+                            },
+                            relativeTo: "chart",
                         },
-                        responsive: {
-                            rules: [{
-                                condition: {
-                                    maxWidth: 500
-                                },
-                                chartOptions: {
-                                    chart: {
-                                        height: 300
-                                    },
-                                    legend: {
-                                        enabled: false
-                                    },
-                                    subtitle: {
-                                        enabled: false
-                                    }
-                                }
-                            }]
-                        },
-                        credits: {
-                            enabled: true,
-                            text: 'communitrics.com',
-                            href: 'http://www.communitrics.com'
+                    },
+                    title: {
+                        text: seriesName
+                    },
+                    xAxis: {
+                        type: 'datetime',
+                        title: {
+                            text: 'Date'
                         }
-                    });
+                    },
+                    yAxis: {
+                        title: {
+                            text: yAxisText
+                        }
+                    },
+                    series: [{
+                        name: seriesName,
+                        data: chartData,
+                        color: chartColor,
+                        lineWidth: 1.5,
+                        marker: {
+                            enabled: false
+                        },
+                        fillColor: chartColor,
+                        threshold: null
+                    }],
+                    plotOptions: {
+                        series: {
+                            turboThreshold: chartData.length
+                        }
+                    },
+                    responsive: {
+                        rules: [{
+                            condition: {
+                                maxWidth: 500
+                            },
+                            chartOptions: {
+                                chart: {
+                                    height: 300
+                                },
+                                legend: {
+                                    enabled: false
+                                },
+                                subtitle: {
+                                    enabled: false
+                                }
+                            }
+                        }]
+                    },
+                    credits: {
+                        enabled: true,
+                        text: 'communitrics.com',
+                        href: 'http://www.communitrics.com'
+                    }
+                });
                 };
                 img.src = profilePictureUrl;
             }
