@@ -208,21 +208,14 @@ function hideContent() {
     document.getElementById('chartArea').classList.remove('show');
 }
 
-function filterOutliers(data) {
-    return data.filter(item => {
-        const val = parseInt(item.average_per_day);
-        return (val >= 100000 && val <= 2000000);
-    });
-}
-
 async function fetchGraphData(channelId) {
     try {
-        const response = await fetch(`https://api.communitrics.com/${channelId}?david=true&averages=true&all=true`);
+        const response = await fetch(`https://api.communitrics.com/${channelId}?david=true&averages=true`);
         const graphData = await response.json();
 
         if (response.ok) {
             console.log(`Total points before removal: ${graphData.data.length}`);
-            const reducedData = filterOutliers(graphData.data);
+            const reducedData = graphData.data;  
             console.log(`Total points after removal: ${reducedData.length}`);
             drawChart(reducedData, graphData.channelDetails.profilePicture);
             drawAverageChart(reducedData, graphData.channelDetails.profilePicture);
