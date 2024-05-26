@@ -209,18 +209,9 @@ function hideContent() {
 }
 
 function filterOutliers(data) {
-    const values = data.map(item => parseInt(item.average_per_day));
-    values.sort((a, b) => a - b);
-
-    const q1 = values[Math.floor((values.length / 4))];
-    const q3 = values[Math.floor((values.length * (3 / 4)))];
-    const iqr = q3 - q1;
-    const lowerBound = q1 - 4 * iqr;
-    const upperBound = q3 + 4 * iqr;
-
     return data.filter(item => {
         const val = parseInt(item.average_per_day);
-        return (val >= lowerBound && val <= upperBound);
+        return (val >= 100000 && val <= 2000000);
     });
 }
 
@@ -231,7 +222,7 @@ async function fetchGraphData(channelId) {
 
         if (response.ok) {
             console.log(`Total points before removal: ${graphData.data.length}`);
-            const reducedData = reduceDataPoints(graphData.data, 10000);
+            const reducedData = filterOutliers(graphData.data);
             console.log(`Total points after removal: ${reducedData.length}`);
             drawChart(reducedData, graphData.channelDetails.profilePicture);
             drawAverageChart(reducedData, graphData.channelDetails.profilePicture);
