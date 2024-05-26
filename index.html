@@ -250,10 +250,13 @@ function drawChart(channelSubscriberData, profilePictureUrl) {
 }
 
 function drawAverageChart(channelSubscriberData, profilePictureUrl) {
-    const numericData = channelSubscriberData.map(data => ({
+    const filteredData = channelSubscriberData.filter(data => parseInt(data.average_per_day) <= 5000000);
+
+    const numericData = filteredData.map(data => ({
         ...data,
         average_per_day: parseInt(data.average_per_day)
     }));
+
 
     setupChart(numericData, 'averageSubChart', profilePictureUrl, 'Average Daily Subscribers', 'Average Subscribers', true);
 }
