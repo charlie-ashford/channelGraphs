@@ -250,9 +250,7 @@ function drawChart(channelSubscriberData, profilePictureUrl) {
 }
 
 function drawAverageChart(channelSubscriberData, profilePictureUrl) {
-    const filteredData = filterOutliers(channelSubscriberData);
-
-    const numericData = filteredData.map(data => ({
+    const numericData = channelSubscriberData.map(data => ({
         ...data,
         average_per_day: parseInt(data.average_per_day)
     }));
