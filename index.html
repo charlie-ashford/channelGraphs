@@ -250,7 +250,7 @@ function drawChart(channelSubscriberData, profilePictureUrl) {
 }
 
 function drawAverageChart(channelSubscriberData, profilePictureUrl) {
-    const filteredData = channelSubscriberData.filter(data => parseInt(data.average_per_day) <= 5000000);
+    const filteredData = channelSubscriberData.filter(data => parseInt(data.average_per_day) <= 50000000);
 
     const numericData = filteredData.map(data => ({
         ...data,
