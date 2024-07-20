@@ -523,6 +523,26 @@
               labels: { style: { color: "var(--text-secondary)" } },
             },
             legend: { enabled: false },
+            tooltip: {
+              backgroundColor:
+                document.body.getAttribute("data-theme") === "dark"
+                  ? "var(--card-bg)"
+                  : "var(--bg-color)",
+              style: { color: "var(--text-primary)" },
+              formatter: function () {
+                const date = new Date(this.x);
+                const localDate = date.toLocaleString(undefined, {
+                  year: "numeric",
+                  month: "short",
+                  day: "numeric",
+                  hour: "numeric",
+                  minute: "numeric",
+                });
+                return `<b>${
+                  this.series.name
+                }</b><br/>${localDate}: ${this.y.toLocaleString()}`;
+              },
+            },
             plotOptions: {
               area: {
                 fillColor: {
