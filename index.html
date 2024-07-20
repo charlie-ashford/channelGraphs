@@ -210,7 +210,7 @@ function hideContent() {
 
 async function fetchGraphData(channelId) {
     try {
-        const response = await fetch(`https://api.communitrics.com/${channelId}?david=true&averages=true`);
+        const response = await fetch(`https://api.communitrics.com/${channelId}?david=true&averages=true&all=true`);
         const graphData = await response.json();
 
         if (response.ok) {
