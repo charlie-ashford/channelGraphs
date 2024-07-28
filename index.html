@@ -126,6 +126,12 @@
         font-size: 1rem;
       }
 
+      .channel-id {
+        color: var(--text-secondary);
+        font-size: 0.875rem;
+        margin-top: 0.25rem;
+      }
+
       .channel-link {
         color: inherit;
         text-decoration: none;
@@ -134,7 +140,6 @@
       }
 
       .channel-link:hover {
-        color: var(--hover-color);
         text-decoration: underline;
       }
 
@@ -150,7 +155,7 @@
         border-radius: 10px;
         padding: 1.5rem;
         height: 400px;
-        transition: background-color var(--transition-duration),
+        transition: background-color var (--transition-duration),
           color var(--transition-duration);
       }
 
@@ -255,6 +260,10 @@
           font-size: 0.875rem;
         }
 
+        .channel-id {
+          font-size: 0.75rem;
+        }
+
         .theme-toggle {
           width: 100%;
           padding: 0.5rem 1rem;
@@ -297,7 +306,7 @@
           <button
             id="exportButton"
             class="action-button"
-            onclick="exportToCSV()
+            onclick="exportToCSV()"
           >
             <i class="fas fa-file-export"></i> Export to CSV
           </button>
@@ -410,13 +419,34 @@
             <img src="${details.profileImage}" alt="${details.title}" class="channel-avatar">
             <div class="channel-details">
               <h2>
-                <a href="https://youtube.com/channel/${details.channelId}" class="channel-link">${details.title}</a>
+                <a id="channelLink" href="https://youtube.com/channel/${details.channelId}" class="channel-link">${details.title}</a>
               </h2>
               <div class="subscriber-count">${formattedSubscribers} subscribers</div>
+              <div class="channel-id">${details.channelId}</div>
             </div>
           </div>
         `;
         document.getElementById("channelInfo").innerHTML = infoHtml;
+
+        // Apply Color Thief to set the channel link color
+        const img = new Image();
+        img.crossOrigin = "Anonymous";
+        img.onload = function () {
+          const colorThief = new ColorThief();
+          const palette = colorThief.getPalette(img, 8);
+          const mostVibrantColor = getMostVibrantColor(palette);
+          const channelLinkColor = `rgb(${mostVibrantColor.join(",")})`;
+
+          // Update the channel link color
+          document.querySelector(".channel-link").style.color = channelLinkColor;
+          document.querySelector(".channel-link").addEventListener("mouseover", function () {
+            this.style.textDecoration = "underline";
+          });
+          document.querySelector(".channel-link").addEventListener("mouseout", function () {
+            this.style.textDecoration = "none";
+          });
+        };
+        img.src = details.profileImage;
       }
 
       function drawSubscriberChart(data, profilePictureUrl) {
