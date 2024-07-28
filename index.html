@@ -20,7 +20,7 @@
         --text-secondary: #aaaaaa;
         --accent-color: #ff0000;
         --hover-color: #ff3333;
-        --transition-duration: 0.3s;
+        --transition-duration: 0.25s;
       }
 
       [data-theme="light"] {
@@ -128,15 +128,14 @@
 
       .channel-id {
         color: var(--text-secondary);
-        font-size: 0.875rem;
+        font-size: 0.75rem;
         margin-top: 0.25rem;
       }
 
       .channel-link {
-        color: inherit;
+        color: var(--text-primary);
         text-decoration: none;
-        transition: color var(--transition-duration),
-          text-decoration var(--transition-duration);
+        transition: color var(--transition-duration);
       }
 
       .channel-link:hover {
@@ -351,7 +350,7 @@
           if (response.ok) {
             currentChannelId = data.channelId;
             currentChannelName = data.channelDetails.title; 
-            displayChannelInfo(data.channelDetails);
+            displayChannelInfo(data.channelDetails, data.channelId);
             fetchGraphData(currentChannelId);
             showContent();
           } else {
@@ -409,7 +408,7 @@
         }
       }
 
-      function displayChannelInfo(details) {
+      function displayChannelInfo(details, channelId) {
         const formattedSubscribers = parseInt(
           details.subscriberCount
         ).toLocaleString();
@@ -419,16 +418,15 @@
             <img src="${details.profileImage}" alt="${details.title}" class="channel-avatar">
             <div class="channel-details">
               <h2>
-                <a id="channelLink" href="https://youtube.com/channel/${details.channelId}" class="channel-link">${details.title}</a>
+                <a id="channelLink" href="https://youtube.com/channel/${channelId}" class="channel-link">${details.title}</a>
               </h2>
               <div class="subscriber-count">${formattedSubscribers} subscribers</div>
-              <div class="channel-id">${details.channelId}</div>
+              <div class="channel-id">${channelId}</div>
             </div>
           </div>
         `;
         document.getElementById("channelInfo").innerHTML = infoHtml;
 
-        // Apply Color Thief to set the channel link color
         const img = new Image();
         img.crossOrigin = "Anonymous";
         img.onload = function () {
@@ -436,14 +434,11 @@
           const palette = colorThief.getPalette(img, 8);
           const mostVibrantColor = getMostVibrantColor(palette);
           const channelLinkColor = `rgb(${mostVibrantColor.join(",")})`;
-
-          // Update the channel link color
-          document.querySelector(".channel-link").style.color = channelLinkColor;
           document.querySelector(".channel-link").addEventListener("mouseover", function () {
-            this.style.textDecoration = "underline";
+            this.style.color = channelLinkColor;
           });
           document.querySelector(".channel-link").addEventListener("mouseout", function () {
-            this.style.textDecoration = "none";
+            this.style.color = "var(--text-primary)";
           });
         };
         img.src = details.profileImage;
