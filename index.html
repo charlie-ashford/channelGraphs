@@ -665,16 +665,17 @@
         csvContent += "Date,Subscribers,Average Daily Subs\n";
 
         currentChannelData.forEach(function (row) {
-          let date = new Date(row.last_updated).toISOString().split("T")[0];
+          let dateTime = new Date(row.last_updated).toISOString();
           let subscribers = row.previous_sub_count;
           let avgSubs = row.average_per_day;
-          csvContent += `${date},${subscribers},${avgSubs}\n`;
+          csvContent += `${time},${subscribers},${avgSubs}\n`;
         });
 
+        let currentDate = new Date().toISOString().split('T')[0];
         var encodedUri = encodeURI(csvContent);
         var link = document.createElement("a");
         link.setAttribute("href", encodedUri);
-        link.setAttribute("download", `${currentChannelName}_data.csv`); 
+        link.setAttribute("download", `${currentChannelName}_subs(${currentDate}).csv`); 
         document.body.appendChild(link);
         link.click();
         document.body.removeChild(link);
