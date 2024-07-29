@@ -662,13 +662,13 @@
         }
 
         let csvContent = "data:text/csv;charset=utf-8,";
-        csvContent += "Date,Subscribers,Average Daily Subs\n";
+        csvContent += "Time,Subscribers,Average Daily Subs\n";
 
         currentChannelData.forEach(function (row) {
           let dateTime = new Date(row.last_updated).toISOString();
           let subscribers = row.previous_sub_count;
           let avgSubs = row.average_per_day;
-          csvContent += `${time},${subscribers},${avgSubs}\n`;
+          csvContent += `${dateTime},${subscribers},${avgSubs}\n`;
         });
 
         let currentDate = new Date().toISOString().split('T')[0];
