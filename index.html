@@ -666,12 +666,12 @@
       
           currentChannelData.forEach(function (row) {
               let dateTime = new Date(row.last_updated);
-              let formattedDateTime = dateTime.getFullYear() + "-" + 
-                                      ("0" + (dateTime.getMonth() + 1)).slice(-2) + "-" + 
-                                      ("0" + dateTime.getDate()).slice(-2) + " " + 
-                                      ("0" + dateTime.getHours()).slice(-2) + ":" + 
-                                      ("0" + dateTime.getMinutes()).slice(-2) + ":" + 
-                                      ("0" + dateTime.getSeconds()).slice(-2);
+              let formattedDateTime = dateTime.getUTCFullYear() + "-" + 
+                                      ("0" + (dateTime.getUTCMonth() + 1)).slice(-2) + "-" + 
+                                      ("0" + dateTime.getUTCDate()).slice(-2) + " " + 
+                                      ("0" + dateTime.getUTCHours()).slice(-2) + ":" + 
+                                      ("0" + dateTime.getUTCMinutes()).slice(-2) + ":" + 
+                                      ("0" + dateTime.getUTCSeconds()).slice(-2);
               let subscribers = row.previous_sub_count;
               let avgSubs = row.average_per_day;
               csvContent += `${formattedDateTime},${subscribers},${avgSubs}\n`;
