@@ -656,29 +656,35 @@
       }
 
       function exportToCSV() {
-        if (currentChannelData.length === 0) {
-          alert("No data to export. Please search for a channel first.");
-          return;
-        }
-
-        let csvContent = "data:text/csv;charset=utf-8,";
-        csvContent += "Time,Subscribers,Average Daily Subs\n";
-
-        currentChannelData.forEach(function (row) {
-          let dateTime = new Date(row.last_updated).toISOString();
-          let subscribers = row.previous_sub_count;
-          let avgSubs = row.average_per_day;
-          csvContent += `${dateTime},${subscribers},${avgSubs}\n`;
-        });
-
-        let currentDate = new Date().toISOString().split('T')[0];
-        var encodedUri = encodeURI(csvContent);
-        var link = document.createElement("a");
-        link.setAttribute("href", encodedUri);
-        link.setAttribute("download", `${currentChannelName}_subscribers(${currentDate}).csv`); 
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
+          if (currentChannelData.length === 0) {
+              alert("No data to export. Please search for a channel first.");
+              return;
+          }
+      
+          let csvContent = "data:text/csv;charset=utf-8,";
+          csvContent += "Time,Subscribers,Average Daily Subs\n";
+      
+          currentChannelData.forEach(function (row) {
+              let dateTime = new Date(row.last_updated);
+              let formattedDateTime = dateTime.getFullYear() + "-" + 
+                                      ("0" + (dateTime.getMonth() + 1)).slice(-2) + "-" + 
+                                      ("0" + dateTime.getDate()).slice(-2) + " " + 
+                                      ("0" + dateTime.getHours()).slice(-2) + ":" + 
+                                      ("0" + dateTime.getMinutes()).slice(-2) + ":" + 
+                                      ("0" + dateTime.getSeconds()).slice(-2);
+              let subscribers = row.previous_sub_count;
+              let avgSubs = row.average_per_day;
+              csvContent += `${formattedDateTime},${subscribers},${avgSubs}\n`;
+          });
+      
+          let currentDate = new Date().toISOString().split('T')[0];
+          var encodedUri = encodeURI(csvContent);
+          var link = document.createElement("a");
+          link.setAttribute("href", encodedUri);
+          link.setAttribute("download", `${currentChannelName}_subscribers(${currentDate}).csv`);
+          document.body.appendChild(link);
+          link.click();
+          document.body.removeChild(link);
       }
 
       function toggleTheme() {
