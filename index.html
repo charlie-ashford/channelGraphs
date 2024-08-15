@@ -376,9 +376,22 @@
           }
         });
 
-      async function fetchChannelData() {
+      document.addEventListener("DOMContentLoaded", () => {
+        const urlParams = new URLSearchParams(window.location.search);
+        const channelIdFromUrl = urlParams.get("id");
+
+        if (channelIdFromUrl) {
+          fetchChannelData(channelIdFromUrl);
+        } else {
+          fetchChannelData();
+        }
+      });
+
+      async function fetchChannelData(channelId = "") {
         const channelHandle =
-          document.getElementById("channelIdInput").value.trim() || "MrBeast";
+          channelId ||
+          document.getElementById("channelIdInput").value.trim() ||
+          "MrBeast";
         try {
           const response = await fetch(
             `https://api.communitrics.com/youtube/api/?channel=${channelHandle}`
