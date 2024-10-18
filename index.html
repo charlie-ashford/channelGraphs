@@ -446,8 +446,8 @@
       async function fetchGraphData(channelId, allValues = true) {
         try {
           const url = allValues
-            ? `https://api.communitrics.com/${channelId}?david=true&averages=true&all=false`
-            : `https://api.communitrics.com/${channelId}?david=true&averages=true`;
+            ? `https://api.communitrics.com/${channelId}?realTime=true&averages=true&all=false`
+            : `https://api.communitrics.com/${channelId}?realTime=true&averages=true`;
           const response = await fetch(url);
           const graphData = await response.json();
 
