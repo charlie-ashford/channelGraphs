@@ -528,11 +528,10 @@
       }
 
       function drawAverageSubsChart(data, profilePictureUrl) {
-        const chartData = data
-          .map((entry) => ({
-            x: new Date(entry.last_updated).getTime(),
-            y: parseInt(entry.average_per_day),
-          }))
+        const chartData = data.map((entry) => ({
+          x: new Date(entry.last_updated).getTime(),
+          y: parseInt(entry.average_per_day),
+        }));
 
         setupChart(
           "averageSubsChart",
