@@ -59,9 +59,10 @@
         --accent-2: #ff6b6b;
         --hover-color: #ff3333;
         --transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-        --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.15), 0 2px 4px -1px rgba(0, 0, 0, 0.1);
+        --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.15),
+          0 2px 4px -1px rgba(0, 0, 0, 0.1);
       }
-      [data-theme="light"] {
+      [data-theme='light'] {
         --bg-color: #f8fafc;
         --card-bg: #ffffff;
         --text-primary: #1e293b;
@@ -69,7 +70,8 @@
         --accent-1: #ef4444;
         --accent-2: #f87171;
         --hover-color: #dc2626;
-        --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.15), 0 2px 4px -1px rgba(0, 0, 0, 0.1);
+        --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.15),
+          0 2px 4px -1px rgba(0, 0, 0, 0.1);
       }
       * {
         margin: 0;
@@ -77,11 +79,11 @@
         box-sizing: border-box;
       }
       body {
-        font-family: "Poppins", sans-serif;
+        font-family: 'Poppins', sans-serif;
         background-color: var(--bg-color);
         color: var(--text-primary);
         line-height: 1.6;
-        transition: background-color var(--transition)
+        transition: background-color var(--transition);
       }
       .container {
         max-width: 1400px;
@@ -174,7 +176,11 @@
         box-shadow: 0 0 0 2px var(--channel-color);
       }
       #channelInfo {
-        background: linear-gradient(135deg, rgba(255, 77, 77, 0.1), rgba(255, 107, 107, 0.05));
+        background: linear-gradient(
+          135deg,
+          rgba(255, 77, 77, 0.1),
+          rgba(255, 107, 107, 0.05)
+        );
         border-radius: 16px;
         padding: 2rem;
         margin-bottom: 3rem;
@@ -239,7 +245,7 @@
         min-height: 250px;
       }
       .chart-container::before {
-        content: "";
+        content: '';
         position: absolute;
         top: 0;
         left: 0;
@@ -265,7 +271,7 @@
       .loading-spinner {
         width: 40px;
         height: 40px;
-        border: 4px solid var(--text-secondary);
+        border: 4px solid var(--chart-color, var(--text-secondary));
         border-top-color: transparent;
         border-radius: 50%;
         animation: spin 1s linear infinite;
@@ -310,7 +316,7 @@
       .highcharts-grid-line {
         stroke: rgba(255, 255, 255, 0.1) !important;
       }
-      [data-theme="light"] .highcharts-grid-line {
+      [data-theme='light'] .highcharts-grid-line {
         stroke: rgba(0, 0, 0, 0.1) !important;
       }
     </style>
@@ -360,30 +366,32 @@
     <script src="https://code.highcharts.com/12.0.2/highcharts.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/color-thief/2.3.0/color-thief.min.js"></script>
     <script>
-      let currentChannelId = "";
+      let currentChannelId = '';
       let currentChannelData = [];
-      let currentChannelName = "";
+      let currentChannelName = '';
       let isShowingAll = false;
-      document.getElementById("channelIdInput").addEventListener("keydown", function (event) {
-        if (event.key === "Enter") {
-          event.preventDefault();
-          fetchChannelData();
-        }
-      });
-      document.addEventListener("DOMContentLoaded", () => {
+      document
+        .getElementById('channelIdInput')
+        .addEventListener('keydown', function (event) {
+          if (event.key === 'Enter') {
+            event.preventDefault();
+            fetchChannelData();
+          }
+        });
+      document.addEventListener('DOMContentLoaded', () => {
         const urlParams = new URLSearchParams(window.location.search);
-        const channelIdFromUrl = urlParams.get("id");
+        const channelIdFromUrl = urlParams.get('id');
         if (channelIdFromUrl) {
-          document.getElementById("channelIdInput").value = channelIdFromUrl;
+          document.getElementById('channelIdInput').value = channelIdFromUrl;
           fetchChannelData(channelIdFromUrl);
         } else {
-          document.getElementById("channelIdInput").value = "MrBeast";
-          fetchChannelData("MrBeast");
+          document.getElementById('channelIdInput').value = 'MrBeast';
+          fetchChannelData('MrBeast');
         }
       });
-      async function fetchChannelData(channelId = "") {
+      async function fetchChannelData(channelId = '') {
         const channelHandle =
-          channelId || document.getElementById("channelIdInput").value.trim();
+          channelId || document.getElementById('channelIdInput').value.trim();
         try {
           const response = await fetch(
             `https://api.communitrics.com/youtube/api/?channel=${channelHandle}`
@@ -392,32 +400,34 @@
           if (response.ok) {
             currentChannelId = data.channelId;
             currentChannelName = data.channelDetails.title;
-            window.history.pushState({}, "", `?id=${currentChannelId}`);
+            window.history.pushState({}, '', `?id=${currentChannelId}`);
             displayChannelInfo(data.channelDetails, data.channelId);
             isShowingAll = false;
-            document.getElementById("allDataLabel").innerText = "All Data";
+            document.getElementById('allDataLabel').innerText = 'All Data';
             fetchGraphData(currentChannelId, true);
             showContent();
           } else {
-            document.getElementById("channelInfo").innerHTML = `<p class="error">${
-              data.error || "An error occurred while fetching data."
+            document.getElementById(
+              'channelInfo'
+            ).innerHTML = `<p class="error">${
+              data.error || 'An error occurred while fetching data.'
             }</p>`;
             hideContent();
           }
         } catch (error) {
-          console.error("Failed to fetch data:", error);
-          document.getElementById("channelInfo").innerHTML =
+          console.error('Failed to fetch data:', error);
+          document.getElementById('channelInfo').innerHTML =
             '<p class="error">Failed to fetch data.</p>';
           hideContent();
         }
       }
       function showContent() {
-        document.getElementById("channelInfo").style.display = "block";
-        document.getElementById("chartArea").style.display = "flex";
+        document.getElementById('channelInfo').style.display = 'block';
+        document.getElementById('chartArea').style.display = 'flex';
       }
       function hideContent() {
-        document.getElementById("channelInfo").style.display = "none";
-        document.getElementById("chartArea").style.display = "none";
+        document.getElementById('channelInfo').style.display = 'none';
+        document.getElementById('chartArea').style.display = 'none';
       }
       async function fetchGraphData(channelId, defaultLoad = true) {
         showLoading();
@@ -439,30 +449,32 @@
             );
           } else {
             console.log(
-              "Error fetching graph data:",
-              graphData.error || "An unspecified error occurred."
+              'Error fetching graph data:',
+              graphData.error || 'An unspecified error occurred.'
             );
           }
         } catch (error) {
-          console.error("Failed to fetch graph data:", error);
+          console.error('Failed to fetch graph data:', error);
         } finally {
           hideLoading();
         }
       }
       function showLoading() {
-        document.querySelectorAll(".loading-overlay").forEach((el) => {
-          el.style.opacity = "1";
-          el.style.pointerEvents = "auto";
+        document.querySelectorAll('.loading-overlay').forEach(el => {
+          el.style.opacity = '1';
+          el.style.pointerEvents = 'auto';
         });
       }
       function hideLoading() {
-        document.querySelectorAll(".loading-overlay").forEach((el) => {
-          el.style.opacity = "0";
-          el.style.pointerEvents = "none";
+        document.querySelectorAll('.loading-overlay').forEach(el => {
+          el.style.opacity = '0';
+          el.style.pointerEvents = 'none';
         });
       }
       function displayChannelInfo(details, channelId) {
-        const formattedSubscribers = parseInt(details.subscriberCount).toLocaleString();
+        const formattedSubscribers = parseInt(
+          details.subscriberCount
+        ).toLocaleString();
         const infoHtml = `
           <div class="channel-header">
             <img src="${details.profileImage}" alt="${details.title}" class="channel-avatar">
@@ -475,55 +487,60 @@
             </div>
           </div>
         `;
-        document.getElementById("channelInfo").innerHTML = infoHtml;
+        document.getElementById('channelInfo').innerHTML = infoHtml;
         const img = new Image();
-        img.crossOrigin = "Anonymous";
+        img.crossOrigin = 'Anonymous';
         img.onload = function () {
           const colorThief = new ColorThief();
           const palette = colorThief.getPalette(img, 8);
           const mostVibrantColor = getMostVibrantColor(palette);
-          const channelLinkColor = `rgb(${mostVibrantColor.join(",")})`;
-          const channelLink = document.querySelector(".channel-link");
-          channelLink.addEventListener("mouseover", function () {
+          const channelLinkColor = `rgb(${mostVibrantColor.join(',')})`;
+          document.documentElement.style.setProperty(
+            '--chart-color',
+            channelLinkColor
+          );
+          const channelLink = document.querySelector('.channel-link');
+          channelLink.addEventListener('mouseover', function () {
             this.style.color = channelLinkColor;
           });
-          channelLink.addEventListener("mouseout", function () {
-            this.style.color = "var(--text-primary)";
+          channelLink.addEventListener('mouseout', function () {
+            this.style.color = 'var(--text-primary)';
           });
-          const avatar = document.querySelector(".channel-avatar");
+          const avatar = document.querySelector('.channel-avatar');
           if (avatar) {
             avatar.style.borderColor = channelLinkColor;
           }
           const [r, g, b] = mostVibrantColor;
-          document.getElementById("channelInfo").style.background = 
-            `linear-gradient(135deg, rgba(${r}, ${g}, ${b}, 0.1), rgba(${r}, ${g}, ${b}, 0.05))`;
+          document.getElementById(
+            'channelInfo'
+          ).style.background = `linear-gradient(135deg, rgba(${r}, ${g}, ${b}, 0.1), rgba(${r}, ${g}, ${b}, 0.05))`;
         };
         img.src = details.profileImage;
       }
       function drawSubscriberChart(data, profilePictureUrl) {
-        const chartData = data.map((entry) => ({
+        const chartData = data.map(entry => ({
           x: new Date(entry.last_updated).getTime(),
           y: parseInt(entry.previous_sub_count),
         }));
         setupChart(
-          "subscriberChart",
+          'subscriberChart',
           chartData,
           profilePictureUrl,
-          "Subscriber Growth",
-          "Subscribers"
+          'Subscriber Growth',
+          'Subscribers'
         );
       }
       function drawAverageSubsChart(data, profilePictureUrl) {
-        const chartData = data.map((entry) => ({
+        const chartData = data.map(entry => ({
           x: new Date(entry.last_updated).getTime(),
           y: parseInt(entry.average_per_day),
         }));
         setupChart(
-          "averageSubsChart",
+          'averageSubsChart',
           chartData,
           profilePictureUrl,
-          "Average Daily Subscribers",
-          "Average Subscribers"
+          'Average Daily Subscribers',
+          'Average Subscribers'
         );
       }
       function getVibrancy(rgb) {
@@ -538,202 +555,240 @@
           getVibrancy(color) > getVibrancy(mostVibrant) ? color : mostVibrant
         );
       }
-      function setupChart(containerId, data, profilePictureUrl, title, yAxisText) {
+      function setupChart(
+        containerId,
+        data,
+        profilePictureUrl,
+        title,
+        yAxisText
+      ) {
         const colorThief = new ColorThief();
         const img = new Image();
-        img.crossOrigin = "Anonymous";
+        img.crossOrigin = 'Anonymous';
         img.onload = function () {
           const palette = colorThief.getPalette(img, 8);
           const mostVibrantColor = getMostVibrantColor(palette);
-          const chartColor = `rgb(${mostVibrantColor.join(",")})`;
-          document.documentElement.style.setProperty('--channel-color', chartColor);
+          const chartColor = `rgb(${mostVibrantColor.join(',')})`;
+
+          // Set the loading spinner color immediately
+          document.documentElement.style.setProperty(
+            '--chart-color',
+            chartColor
+          );
+          document.documentElement.style.setProperty(
+            '--channel-color',
+            chartColor
+          );
           Highcharts.chart(containerId, {
             chart: {
-              type: "area",
-              zoomType: "x",
+              type: 'area',
+              zoomType: 'x',
               panning: true,
-              panKey: "shift",
+              panKey: 'shift',
               animation: { duration: 500 },
-              backgroundColor: "transparent",
+              backgroundColor: 'transparent',
               events: {
                 dblclick: function () {
                   this.zoomOut();
-                }
+                },
               },
               resetZoomButton: {
                 theme: {
-                  fill: "var(--card-bg)",
+                  fill: 'var(--card-bg)',
                   stroke: chartColor,
                   r: 5,
                   style: {
                     color: chartColor,
-                    fontSize: "12px",
-                    fontWeight: "bold"
+                    fontSize: '12px',
+                    fontWeight: 'bold',
                   },
                   states: {
                     hover: {
-                      fill: "var(--bg-color)",
-                      style: { color: chartColor }
-                    }
-                  }
+                      fill: 'var(--bg-color)',
+                      style: { color: chartColor },
+                    },
+                  },
                 },
                 position: {
-                  align: "right",
-                  verticalAlign: "top",
+                  align: 'right',
+                  verticalAlign: 'top',
                   x: -10,
-                  y: 10
+                  y: 10,
                 },
-                relativeTo: "chart"
-              }
+                relativeTo: 'chart',
+              },
             },
             title: {
               text: title,
-              style: { color: "var(--text-primary)", fontSize: "22px", fontWeight: "600" }
+              style: {
+                color: 'var(--text-primary)',
+                fontSize: '22px',
+                fontWeight: '600',
+              },
             },
             xAxis: {
-              type: "datetime",
-              labels: { style: { color: "var(--text-secondary)", fontSize: "12px" } },
+              type: 'datetime',
+              labels: {
+                style: { color: 'var(--text-secondary)', fontSize: '12px' },
+              },
               gridLineWidth: 1,
-              gridLineColor: "rgba(255,255,255,0.1)"
+              gridLineColor: 'rgba(255,255,255,0.1)',
             },
             yAxis: {
               title: {
                 text: yAxisText,
-                style: { color: "var(--text-secondary)", fontSize: "14px" }
+                style: { color: 'var(--text-secondary)', fontSize: '14px' },
               },
-              labels: { style: { color: "var(--text-secondary)", fontSize: "12px" } },
-              gridLineColor: "rgba(255,255,255,0.1)"
+              labels: {
+                style: { color: 'var(--text-secondary)', fontSize: '12px' },
+              },
+              gridLineColor: 'rgba(255,255,255,0.1)',
             },
             legend: { enabled: false },
             tooltip: {
               backgroundColor:
-                document.body.getAttribute("data-theme") === "dark"
-                  ? "var(--card-bg)"
-                  : "var(--bg-color)",
+                document.body.getAttribute('data-theme') === 'dark'
+                  ? 'var(--card-bg)'
+                  : 'var(--bg-color)',
               borderColor: chartColor,
               borderWidth: 1,
               shadow: true,
-              style: { color: "var(--text-primary)", fontSize: "13px" },
+              style: { color: 'var(--text-primary)', fontSize: '13px' },
               formatter: function () {
                 const date = new Date(this.x);
                 const utcDate = date.toLocaleString(undefined, {
-                  timeZone: "UTC",
-                  year: "numeric",
-                  month: "short",
-                  day: "numeric",
-                  hour: "numeric",
-                  minute: "numeric"
+                  timeZone: 'UTC',
+                  year: 'numeric',
+                  month: 'short',
+                  day: 'numeric',
+                  hour: 'numeric',
+                  minute: 'numeric',
                 });
-                return `<b>${this.series.name}</b><br/>${utcDate}: ${this.y.toLocaleString()}`;
-              }
+                return `<b>${
+                  this.series.name
+                }</b><br/>${utcDate}: ${this.y.toLocaleString()}`;
+              },
             },
             plotOptions: {
               area: {
                 fillColor: {
                   linearGradient: { x1: 0, y1: 0, x2: 0, y2: 1 },
                   stops: [
-                    [0, Highcharts.color(chartColor).setOpacity(0.6).get("rgba")],
-                    [1, Highcharts.color(chartColor).setOpacity(0.0).get("rgba")]
-                  ]
+                    [
+                      0,
+                      Highcharts.color(chartColor).setOpacity(0.6).get('rgba'),
+                    ],
+                    [
+                      1,
+                      Highcharts.color(chartColor).setOpacity(0.0).get('rgba'),
+                    ],
+                  ],
                 },
                 marker: { radius: 3, fillColor: chartColor, lineWidth: 0 },
                 lineWidth: 2,
                 states: { hover: { lineWidth: 2 } },
-                shadow: { color: "rgba(0, 0, 0, 0.15)", width: 5, offsetX: 0, offsetY: 2 },
-                threshold: null
-              }
+                shadow: {
+                  color: 'rgba(0, 0, 0, 0.15)',
+                  width: 5,
+                  offsetX: 0,
+                  offsetY: 2,
+                },
+                threshold: null,
+              },
             },
             series: [
-              { type: "area", name: yAxisText, data: data, color: chartColor }
+              { type: 'area', name: yAxisText, data: data, color: chartColor },
             ],
-            credits: { enabled: false }
+            credits: { enabled: false },
           });
           updateButtonColors(chartColor);
           updateSearchButtonColor(chartColor);
-          const container = document.querySelector("#" + containerId).parentElement;
+          const container = document.querySelector(
+            '#' + containerId
+          ).parentElement;
           if (container) {
-            container.style.setProperty("--chart-border-color", chartColor);
+            container.style.setProperty('--chart-border-color', chartColor);
             container.style.borderTop = `4px solid ${chartColor}`;
           }
         };
         img.src = profilePictureUrl;
       }
       function updateButtonColors(chartColor) {
-        const buttons = document.querySelectorAll(".action-button");
-        buttons.forEach((button) => {
-          button.addEventListener("mouseover", () => {
+        const buttons = document.querySelectorAll('.action-button');
+        buttons.forEach(button => {
+          button.addEventListener('mouseover', () => {
             button.style.backgroundColor = chartColor;
-            button.style.color = "var(--text-primary)";
+            button.style.color = 'var(--text-primary)';
           });
-          button.addEventListener("mouseout", () => {
-            button.style.backgroundColor = "var(--card-bg)";
-            button.style.color = "var(--text-primary)";
+          button.addEventListener('mouseout', () => {
+            button.style.backgroundColor = 'var(--card-bg)';
+            button.style.color = 'var(--text-primary)';
           });
         });
-        const themeToggle = document.querySelector(".theme-toggle");
-        themeToggle.style.backgroundColor = "var(--card-bg)";
-        themeToggle.addEventListener("mouseover", () => {
+        const themeToggle = document.querySelector('.theme-toggle');
+        themeToggle.style.backgroundColor = 'var(--card-bg)';
+        themeToggle.addEventListener('mouseover', () => {
           themeToggle.style.backgroundColor = chartColor;
         });
-        themeToggle.addEventListener("mouseout", () => {
-          themeToggle.style.backgroundColor = "var(--card-bg)";
+        themeToggle.addEventListener('mouseout', () => {
+          themeToggle.style.backgroundColor = 'var(--card-bg)';
         });
       }
       function updateSearchButtonColor(chartColor) {
-        const searchButton = document.getElementById("searchButton");
+        const searchButton = document.getElementById('searchButton');
         searchButton.style.backgroundColor = chartColor;
-        searchButton.addEventListener("mouseover", () => {
+        searchButton.addEventListener('mouseover', () => {
           searchButton.style.backgroundColor = Highcharts.color(chartColor)
             .brighten(0.2)
             .get();
         });
-        searchButton.addEventListener("mouseout", () => {
+        searchButton.addEventListener('mouseout', () => {
           searchButton.style.backgroundColor = chartColor;
         });
       }
       function toggleAllValues() {
-        if (currentChannelId === "") return;
+        if (currentChannelId === '') return;
         if (isShowingAll) {
           fetchGraphData(currentChannelId, true);
           isShowingAll = false;
-          document.getElementById("allDataLabel").innerText = "All Data";
+          document.getElementById('allDataLabel').innerText = 'All Data';
         } else {
           fetchGraphData(currentChannelId, false);
           isShowingAll = true;
-          document.getElementById("allDataLabel").innerText = "Default";
+          document.getElementById('allDataLabel').innerText = 'Default';
         }
       }
       function exportToCSV() {
         if (currentChannelData.length === 0) {
-          alert("No data to export. Please search for a channel first.");
+          alert('No data to export. Please search for a channel first.');
           return;
         }
-        let csvContent = "data:text/csv;charset=utf-8,";
-        csvContent += "Time,Subscribers,Average Daily Subs\n";
+        let csvContent = 'data:text/csv;charset=utf-8,';
+        csvContent += 'Time,Subscribers,Average Daily Subs\n';
         currentChannelData.forEach(function (row) {
           let dateTime = new Date(row.last_updated);
           let formattedDateTime =
             dateTime.getUTCFullYear() +
-            "-" +
-            ("0" + (dateTime.getUTCMonth() + 1)).slice(-2) +
-            "-" +
-            ("0" + dateTime.getUTCDate()).slice(-2) +
-            " " +
-            ("0" + dateTime.getUTCHours()).slice(-2) +
-            ":" +
-            ("0" + dateTime.getUTCMinutes()).slice(-2) +
-            ":" +
-            ("0" + dateTime.getUTCSeconds()).slice(-2);
+            '-' +
+            ('0' + (dateTime.getUTCMonth() + 1)).slice(-2) +
+            '-' +
+            ('0' + dateTime.getUTCDate()).slice(-2) +
+            ' ' +
+            ('0' + dateTime.getUTCHours()).slice(-2) +
+            ':' +
+            ('0' + dateTime.getUTCMinutes()).slice(-2) +
+            ':' +
+            ('0' + dateTime.getUTCSeconds()).slice(-2);
           let subscribers = row.previous_sub_count;
           let avgSubs = row.average_per_day;
           csvContent += `${formattedDateTime},${subscribers},${avgSubs}\n`;
         });
-        let currentDate = new Date().toISOString().split("T")[0];
+        let currentDate = new Date().toISOString().split('T')[0];
         var encodedUri = encodeURI(csvContent);
-        var link = document.createElement("a");
-        link.setAttribute("href", encodedUri);
+        var link = document.createElement('a');
+        link.setAttribute('href', encodedUri);
         link.setAttribute(
-          "download",
+          'download',
           `${currentChannelName}_subscribers(${currentDate}).csv`
         );
         document.body.appendChild(link);
@@ -742,10 +797,12 @@
       }
       function toggleTheme() {
         const body = document.body;
-        const themeToggle = document.querySelector(".theme-toggle i");
-        const newTheme = body.getAttribute("data-theme") === "dark" ? "light" : "dark";
-        body.setAttribute("data-theme", newTheme);
-        themeToggle.className = newTheme === "dark" ? "fas fa-moon" : "fas fa-sun";
+        const themeToggle = document.querySelector('.theme-toggle i');
+        const newTheme =
+          body.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+        body.setAttribute('data-theme', newTheme);
+        themeToggle.className =
+          newTheme === 'dark' ? 'fas fa-moon' : 'fas fa-sun';
       }
     </script>
   </body>
