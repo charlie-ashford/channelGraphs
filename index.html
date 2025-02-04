@@ -377,7 +377,8 @@
           document.getElementById("channelIdInput").value = channelIdFromUrl;
           fetchChannelData(channelIdFromUrl);
         } else {
-          fetchChannelData();
+          document.getElementById("channelIdInput").value = "MrBeast";
+          fetchChannelData("MrBeast");
         }
       });
       async function fetchChannelData(channelId = "") {
