@@ -433,8 +433,8 @@
         showLoading();
         try {
           const url = defaultLoad
-            ? `https://api.communitrics.com/${channelId}?averages=true&realTime=true&all=false`
-            : `https://api.communitrics.com/${channelId}?averages=true`;
+            ? `https://api.communitrics.com/${channelId}?averages=true&all=false`
+            : `https://api.communitrics.com/${channelId}?averages=true&realTime=true`;
           const response = await fetch(url);
           const graphData = await response.json();
           if (response.ok) {
