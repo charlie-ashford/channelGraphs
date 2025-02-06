@@ -51,32 +51,35 @@
     <meta name="twitter:url" content="https://graphs.communitrics.com" />
     <style>
       :root {
-        --bg-color: #0f0f0f;
-        --card-bg: #1a1a1a;
-        --text-primary: #ffffff;
-        --text-secondary: #aaaaaa;
-        --accent-1: #ff4d4d;
-        --accent-2: #ff6b6b;
-        --hover-color: #ff3333;
+        --bg-color: #121212;
+        --card-bg: #1e1e1e;
+        --text-primary: #e0e0e0;
+        --text-secondary: #b0b0b0;
+        --accent-1: #ff5252;
+        --accent-2: #ff867c;
+        --hover-color: #ff5252;
         --transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-        --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.15),
-          0 2px 4px -1px rgba(0, 0, 0, 0.1);
+        --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.7),
+          0 2px 4px -1px rgba(0, 0, 0, 0.6);
       }
       [data-theme='light'] {
-        --bg-color: #f8fafc;
-        --card-bg: #ffffff;
-        --text-primary: #1e293b;
-        --text-secondary: #64748b;
-        --accent-1: #ef4444;
-        --accent-2: #f87171;
-        --hover-color: #dc2626;
-        --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.15),
-          0 2px 4px -1px rgba(0, 0, 0, 0.1);
+        --bg-color: #dce3e8;
+        --card-bg: #f5f7fa;
+        --text-primary: #1a202c;
+        --text-secondary: #4a5568;
+        --accent-1: #e53e3e;
+        --accent-2: #f56565;
+        --hover-color: #c53030;
+        --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1),
+          0 2px 4px -1px rgba(0, 0, 0, 0.05);
       }
       * {
         margin: 0;
         padding: 0;
         box-sizing: border-box;
+      }
+      *:not(.highcharts-container):not(.highcharts-container *) {
+        transition: all 0.3s ease;
       }
       body {
         font-family: 'Poppins', sans-serif;
@@ -163,6 +166,7 @@
       }
       .theme-toggle:hover {
         background: var(--hover-color);
+        transition: all 0.3s ease;
       }
       .theme-toggle i {
         font-size: 1.2rem;
@@ -202,6 +206,7 @@
       }
       .channel-avatar:hover {
         transform: scale(1.05);
+        transition: all 0.3s ease;
       }
       .channel-details {
         flex: 1;
