@@ -78,8 +78,12 @@
         padding: 0;
         box-sizing: border-box;
       }
-      *:not(.highcharts-container):not(.highcharts-container *) {
-        transition: all 0.3s ease;
+      button:hover,
+      .action-button:hover,
+      .theme-toggle:hover,
+      .a:hover,
+      #searchButton:hover {
+        transition: background-color 0.3s ease, color 0.3s ease, transform 0.3s ease;
       }
       body {
         font-family: 'Poppins', sans-serif;
